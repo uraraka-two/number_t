@@ -50,6 +50,31 @@ inline ll gcd(ll x, ll y) {
   }
   return  x;
 }
+
+ll gcd_bi(ll u, ll v)
+{
+    // simple cases (termination)
+    if (u == v) return u;
+
+    if (u == 0) return v;
+
+    if (v == 0) return u;
+
+    // look for factors of 2
+    if (~u & 1) { // u is even 
+        if (v & 1) // v is odd
+            return gcd(u >> 1, v);
+        else // both u and v are even
+            return gcd(u >> 1, v >> 1) << 1;
+    }
+    if (~v & 1) // u is odd, v is even
+        return gcd(u, v >> 1);
+    // reduce larger argument
+    if (u > v)
+        return gcd((u - v) >> 1, v);
+    return gcd((v - u) >> 1, u);
+}
+
 inline map<ll, int> fact(ll n){
   map<ll, int> hms;
   int a;
@@ -108,7 +133,9 @@ int main() {
     ans = multiple * ans;
     for (ll i = 0; i < remainder; i++) {
       if ( d == i + 1 ) ans += d;
-      else ans += gcd(d, i + 1);
+      //else ans += gcd(d, i + 1);
+      //else ans += __gcd(d, i + 1);
+      else ans += gcd_bi(d, i + 1);
     }
     big_sum += ans * 2 + d;
   }
