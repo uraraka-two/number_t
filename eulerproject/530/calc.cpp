@@ -107,7 +107,8 @@ int main() {
     remainder = div.rem;
     ans = multiple * ans;
     for (ll i = 0; i < remainder; i++) {
-      ans += gcd(d, i + 1);
+      if ( d == i + 1 ) ans += d;
+      else ans += gcd(d, i + 1);
     }
     big_sum += ans * 2 + d;
   }
