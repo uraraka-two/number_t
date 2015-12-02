@@ -26,6 +26,21 @@ void sieve(){
     }
   }
 }
+
+void sieve2() {
+  for (ll i = 0; i < MAX; i += 1) sp[i] = i;
+  
+  for (ll i = 2; i < MAX; i += 2) {
+    if (sp[i] == i) {
+      ll pp = 2 * i;
+      while (pp < MAX) {
+        sp[pp] = i;
+        pp = pp + i;
+      }
+    }
+  }
+}
+
 inline ll gcd(ll x, ll y) {
   ll t;
   while (y != 0) {
@@ -66,8 +81,7 @@ inline ll closed_form(ll p, ll e) {
   return ans;
 }
 
-int main()
-{
+int main() {
   ll k,d;
 
   cin >> k;
