@@ -75,6 +75,28 @@ ll gcd_bi(ll u, ll v)
     return gcd((v - u) >> 1, u);
 }
 
+ll gcd_iter(ll u, ll v) {
+  int shift;
+  /* GCD(0,v) == v; GCD(u,0) == u, GCD(0,0) == 0 */
+  if (u == 0) return v;
+  if (v == 0) return u;
+  for (shift = 0; ((u | v) & 1) == 0; ++shift) {
+         u >>= 1;
+         v >>= 1;
+  }
+  while ((u & 1) == 0)
+    u >>= 1;
+  do {
+       while ((v & 1) == 0)  /* Loop X */
+           v >>= 1;
+       if (u > v) {
+         unsigned int t = v; v = u; u = t;}  // Swap u and v.
+       v = v - u;                       // Here v >= u.
+     } while (v != 0);
+  /* restore common factors of 2 */
+  return u << shift;
+}
+
 inline map<ll, int> fact(ll n){
   map<ll, int> hms;
   int a;
@@ -132,10 +154,7 @@ int main() {
     remainder = div.rem;
     ans = multiple * ans;
     for (ll i = 0; i < remainder; i++) {
-      if ( d == i + 1 ) ans += d;
-      //else ans += gcd(d, i + 1);
-      //else ans += __gcd(d, i + 1);
-      else ans += gcd_bi(d, i + 1);
+      ans += gcd_iter(d, i + 1);
     }
     big_sum += ans * 2 + d;
   }
