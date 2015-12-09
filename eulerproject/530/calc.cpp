@@ -27,54 +27,6 @@ void sieve(){
   }
 }
 
-void sieve2() {
-  for (ll i = 0; i < MAX; i += 1) sp[i] = i;
-  
-  for (ll i = 2; i < MAX; i += 2) {
-    if (sp[i] == i) {
-      ll pp = 2 * i;
-      while (pp < MAX) {
-        sp[pp] = i;
-        pp = pp + i;
-      }
-    }
-  }
-}
-
-inline ll gcd(ll x, ll y) {
-  ll t;
-  while (y != 0) {
-    t = x % y;
-    x = y;
-    y = t;
-  }
-  return  x;
-}
-
-ll gcd_bi(ll u, ll v)
-{
-    // simple cases (termination)
-    if (u == v) return u;
-
-    if (u == 0) return v;
-
-    if (v == 0) return u;
-
-    // look for factors of 2
-    if (~u & 1) { // u is even 
-        if (v & 1) // v is odd
-            return gcd(u >> 1, v);
-        else // both u and v are even
-            return gcd(u >> 1, v >> 1) << 1;
-    }
-    if (~v & 1) // u is odd, v is even
-        return gcd(u, v >> 1);
-    // reduce larger argument
-    if (u > v)
-        return gcd((u - v) >> 1, v);
-    return gcd((v - u) >> 1, u);
-}
-
 ll gcd_iter(ll u, ll v) {
   int shift;
   /* GCD(0,v) == v; GCD(u,0) == u, GCD(0,0) == 0 */
@@ -119,6 +71,25 @@ inline map<ll, int> fact(ll n){
     hms[n]++;
   return hms;
 }
+inline ll gcd_sum(int x, map<ll, int> cnt){
+  ll sum = 0;
+  ll* gcd = new ll[x + 1];
+  for (int i = 1; i <= x; i++) gcd[i] = 1;
+  for (map<ll,int>::const_iterator iter = cnt.begin();
+        iter != cnt.end(); iter++) {
+      for (int j = 0, h = iter->first; j < iter->second; j++, h *= iter->first)
+          for (ll k = h; k <= x; k += h)
+              gcd[k] *= iter->first;
+  }
+  for (int i = 1; i <= x; i++) {
+     sum += gcd[i];
+     //cout << gcd[i] << ' ';
+  }
+  //cout << endl;
+  delete gcd;
+  return sum;
+}
+
 
 //
 // a(p^e) = p^(e-1)*((p-1)e+p)
@@ -141,6 +112,12 @@ int main() {
   for (d = 1; d <= sqrtK; d++){
     ans = 0;
     cnt = fact(d);
+    if ( d > 10000 ){
+      ans = gcd_sum(k/d -d, cnt);
+      big_sum += ans * 2 + d;
+      continue;
+    }
+    
     ll ans = 1;
     lldiv_t div;
     for (map<ll,int>::const_iterator p = cnt.begin();
