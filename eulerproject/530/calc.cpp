@@ -3,15 +3,18 @@
 #include <cstdio>
 #include <cmath>
 #include <map>
+#include <vector>
 #include <cstdlib>
 
 #define MAX 10000000
+#define SUM 10000000000
 
 typedef unsigned long long int ll;
 using namespace std;
 
 bool v[MAX];
 int sp[MAX];
+int gcd[SUM];
 
 void sieve(){
   for (ll i = 2; i < MAX; i += 2){
@@ -71,22 +74,15 @@ inline map<ll, int> fact(ll n){
     hms[n]++;
   return hms;
 }
-inline ll gcd_sum(int x, map<ll, int> cnt){
+inline ll gcd_sum(int to_sum, map<ll, int> cnt){
   ll sum = 0;
-  ll* gcd = new ll[x + 1];
-  for (int i = 1; i <= x; i++) gcd[i] = 1;
+  for (int i = 1; i <= to_sum; i++) gcd[i] = 1;
   for (map<ll,int>::const_iterator iter = cnt.begin();
         iter != cnt.end(); iter++) {
       for (int j = 0, h = iter->first; j < iter->second; j++, h *= iter->first)
-          for (ll k = h; k <= x; k += h)
-              gcd[k] *= iter->first;
+          for (ll k = h; k <= to_sum; k += h) gcd[k] *= iter->first;
   }
-  for (int i = 1; i <= x; i++) {
-     sum += gcd[i];
-     //cout << gcd[i] << ' ';
-  }
-  //cout << endl;
-  delete gcd;
+  for (int i = 1; i <= to_sum; i++) sum += gcd[i];
   return sum;
 }
 
@@ -100,9 +96,9 @@ inline ll closed_form(ll p, ll e) {
 }
 
 int main() {
-  ll k,d;
+  ll k,d,max_limit;
 
-  cin >> k;
+  cin >> k >> max_limit;
   ll sqrtK = sqrt(k);
   sieve();
 
@@ -112,7 +108,7 @@ int main() {
   for (d = 1; d <= sqrtK; d++){
     ans = 0;
     cnt = fact(d);
-    if ( d > 10000 ){
+    if ( d > max_limit ){
       ans = gcd_sum(k/d -d, cnt);
       big_sum += ans * 2 + d;
       continue;
