@@ -3,15 +3,18 @@
 #include <cstdio>
 #include <cmath>
 #include <map>
+#include <vector>
 #include <cstdlib>
 
 #define MAX 10000000
+#define SUM 10000000000
 
 typedef unsigned long long int ll;
 using namespace std;
 
 bool v[MAX];
 int sp[MAX];
+int gcd[SUM];
 
 void sieve(){
   for (ll i = 2; i < MAX; i += 2){
@@ -25,54 +28,6 @@ void sieve(){
       }
     }
   }
-}
-
-void sieve2() {
-  for (ll i = 0; i < MAX; i += 1) sp[i] = i;
-  
-  for (ll i = 2; i < MAX; i += 2) {
-    if (sp[i] == i) {
-      ll pp = 2 * i;
-      while (pp < MAX) {
-        sp[pp] = i;
-        pp = pp + i;
-      }
-    }
-  }
-}
-
-inline ll gcd(ll x, ll y) {
-  ll t;
-  while (y != 0) {
-    t = x % y;
-    x = y;
-    y = t;
-  }
-  return  x;
-}
-
-ll gcd_bi(ll u, ll v)
-{
-    // simple cases (termination)
-    if (u == v) return u;
-
-    if (u == 0) return v;
-
-    if (v == 0) return u;
-
-    // look for factors of 2
-    if (~u & 1) { // u is even 
-        if (v & 1) // v is odd
-            return gcd(u >> 1, v);
-        else // both u and v are even
-            return gcd(u >> 1, v >> 1) << 1;
-    }
-    if (~v & 1) // u is odd, v is even
-        return gcd(u, v >> 1);
-    // reduce larger argument
-    if (u > v)
-        return gcd((u - v) >> 1, v);
-    return gcd((v - u) >> 1, u);
 }
 
 ll gcd_iter(ll u, ll v) {
@@ -119,6 +74,18 @@ inline map<ll, int> fact(ll n){
     hms[n]++;
   return hms;
 }
+inline ll gcd_sum(int to_sum, map<ll, int> cnt){
+  ll sum = 0;
+  for (int i = 1; i <= to_sum; i++) gcd[i] = 1;
+  for (map<ll,int>::const_iterator iter = cnt.begin();
+        iter != cnt.end(); iter++) {
+      for (int j = 0, h = iter->first; j < iter->second; j++, h *= iter->first)
+          for (ll k = h; k <= to_sum; k += h) gcd[k] *= iter->first;
+  }
+  for (int i = 1; i <= to_sum; i++) sum += gcd[i];
+  return sum;
+}
+
 
 //
 // a(p^e) = p^(e-1)*((p-1)e+p)
@@ -129,9 +96,9 @@ inline ll closed_form(ll p, ll e) {
 }
 
 int main() {
-  ll k,d;
+  ll k,d,max_limit;
 
-  cin >> k;
+  cin >> k >> max_limit;
   ll sqrtK = sqrt(k);
   sieve();
 
@@ -141,6 +108,12 @@ int main() {
   for (d = 1; d <= sqrtK; d++){
     ans = 0;
     cnt = fact(d);
+    if ( d > max_limit ){
+      ans = gcd_sum(k/d -d, cnt);
+      big_sum += ans * 2 + d;
+      continue;
+    }
+    
     ll ans = 1;
     lldiv_t div;
     for (map<ll,int>::const_iterator p = cnt.begin();
