@@ -1,7 +1,7 @@
 import pyximport
 pyximport.install()
 
-n=1000
+n=12
 format_w="%3s"
 fs = [i for i in xrange(n+1)]
 
@@ -20,13 +20,13 @@ for p in xrange(2, n+1):
   if fs[p] == p:
     pp = 2*p
     while pp <= n: 
-      #debug(fs, p, iter_n)
       t = fs[pp]
       l = t if isinstance(t, list) else [t]
       l.append(p)
       fs[pp] = l
       pp = pp + p
       iter_n+=1
+      debug(fs, p, iter_n)
 
 print
 print "number:", n
